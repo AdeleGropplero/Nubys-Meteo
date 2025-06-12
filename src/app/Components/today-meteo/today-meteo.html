@@ -1,0 +1,83 @@
+<kendo-card class="today-meteo" orientation="vertical" *ngIf="weather">
+  <kendo-card-header class="k-hstack k-align-items-center">
+    <h4 kendoCardTitle>{{weather.name}} - {{data}}</h4>
+    <div class="k-d-flex k-align-items-center">
+      <img
+        [src]="'https://openweathermap.org/img/wn/' + weather.weather[0].icon + '.png'"
+        alt="icona meteo"
+      />
+      <h5 class="m-0">
+        {{(weather.main.temp).toString() | slice : 0 :4}} <span>°C</span>
+      </h5>
+    </div>
+  </kendo-card-header>
+  <kendo-card-body>
+    <div class="k-d-flex k-align-items-center effemeridi">
+      <div class="k-d-flex k-align-items-center">
+        <i class="bi bi-sunrise icona-meteo"></i>
+        <p class="m-0 ms-2">{{sunriseT}}</p>
+      </div>
+      <div class="k-d-flex k-align-items-center">
+        <i class="bi bi-sunset icona-meteo"></i>
+        <p class="m-0 ms-2">{{sunsetT}}</p>
+      </div>
+    </div>
+    <hr kendoCardSeparator />
+    <div class="k-d-flex k-align-items-center effemeridi py-1">
+      <div class="k-d-flex k-align-items-center">
+        <p class="m-0">Min</p>
+        <p class="m-0 ms-2">{{weather.main.temp_min}} °C</p>
+      </div>
+      <div class="k-d-flex k-align-items-center">
+        <p class="m-0">Max</p>
+        <p class="m-0 ms-2">{{weather.main.temp_max}} °C</p>
+      </div>
+    </div>
+    <hr kendoCardSeparator />
+    <div class="k-d-flex k-align-items-center effemeridi py-1">
+      <div class="k-d-flex k-align-items-center">
+        <p class="m-0">Percepita</p>
+        <p class="m-0 ms-2">{{weather.main.feels_like}} °C</p>
+      </div>
+      <div class="k-d-flex k-align-items-center">
+        <p class="m-0">Umidità</p>
+        <p class="m-0 ms-2">{{weather.main.humidity}} %</p>
+      </div>
+    </div>
+    <hr kendoCardSeparator />
+    <div class="k-d-flex k-align-items-center effemeridi">
+      <div class="k-d-flex k-align-items-center">
+        <i class="bi bi-wind icona-meteo"></i>
+        <p class="m-0 ms-2">{{windSpeed}}</p>
+      </div>
+      <div class="k-d-flex k-align-items-center">
+        <p class="m-0 me-2">Direzione</p>
+        <i class="bi" [ngClass]="windDirection"></i>
+      </div>
+    </div>
+
+    <hr kendoCardSeparator />
+    <div class="k-hstack">
+      <div class="k-column k-text-left">
+        <div class="k-display-4">LON</div>
+        <div>
+          12 Dec 2017<br />
+          18:30
+        </div>
+      </div>
+      <div class="k-column k-display-4 k-text-center">✈️</div>
+      <div class="k-column k-text-right">
+        <div class="k-display-4">SOF</div>
+        <div>
+          12 Dec 2017<br />
+          22:30
+        </div>
+      </div>
+    </div>
+  </kendo-card-body>
+</kendo-card>
+
+<!-- 
+
+
+-->
