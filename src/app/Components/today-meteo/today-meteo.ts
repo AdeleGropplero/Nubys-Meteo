@@ -20,15 +20,25 @@ export class TodayMeteo implements OnInit {
   public windDeg: number = 0;
   public windDirection: string = '';
 
+  public forecast: any;
+
   constructor(private weatherService: WeatherApiService) {}
 
   async ngOnInit() {
-    /* API CALL (GET) */
+    /* API CALL (GET) weather */
     this.weather = await lastValueFrom(
-      this.weatherService.getWeather(45.4721, 9.2399)
+      this.weatherService.getOneCallForecast(45.4721, 9.2399)
     );
 
     console.log('🚀 ~ TodayMeteo ~ ngOnInit ~  this.weather:', this.weather);
+
+    /* API CALL (GET) forecast */
+    this.forecast = await lastValueFrom(
+      this.weatherService.getForecast(45.4721, 9.2399)
+    );
+    console.log('🚀 ~ TodayMeteo ~ ngOnInit ~  this.forecast:', this.forecast);
+
+    /* --------------------------------------------------- */
 
     this.sunriseT = new Date(
       this.weather.sys.sunrise * 1000
@@ -82,15 +92,6 @@ export class TodayMeteo implements OnInit {
         return 'bi-arrow-up';
     }
   }
-
-  /* 
-
-
-
-
-
-
- */
 }
 
 /*   public mobileQuery: MediaQueryList;
