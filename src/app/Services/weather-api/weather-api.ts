@@ -7,12 +7,17 @@ import { Observable } from 'rxjs';
 })
 export class WeatherApiService {
   private apiKey = '07e3f74535df6914e9e000a659e01ea4';
-  private baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
+  private baseUrl = 'https://api.openweathermap.org/data/2.5/';
 
   constructor(private http: HttpClient) {}
 
   getWeather(lat: number, lon: number): Observable<any> {
-    const url = `${this.baseUrl}?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
+    const url = `${this.baseUrl}weather?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
+    return this.http.get<any>(url);
+  }
+
+  getForecast(lat: number, lon: number): Observable<any> {
+    const url = `${this.baseUrl}forecast?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
     return this.http.get<any>(url);
   }
 }
