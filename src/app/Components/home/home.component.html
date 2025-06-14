@@ -1,27 +1,45 @@
-<div class="center-container"><app-today-meteo></app-today-meteo></div>
-<hr />
-
-<!-- <div class="row">
-  <div class="col-3">
-    <app-today-meteo></app-today-meteo>
-  </div>
-  <div class="col-3">
-    <app-today-meteo></app-today-meteo>
-  </div>
-  <div class="col-3">
-    <app-today-meteo></app-today-meteo>
-  </div>
-  <div class="col-3">
-    <app-today-meteo></app-today-meteo>
-  </div>
-</div> -->
-
-<!-- <div
-  class="k-d-grid k-grid-rows-1 k-grid-flow-col k-gap-5 k-text-center k-w-full k-text-white"
->
-  <div><app-today-meteo></app-today-meteo></div>
-  <div><app-today-meteo></app-today-meteo></div>
-  <div><app-today-meteo></app-today-meteo></div>
-  <div><app-today-meteo></app-today-meteo></div>
+<div class="border-end border-primary pt-4 home">
+  <kendo-stacklayout
+    orientation="horizontal"
+    [align]="{ vertical: 'top' }"
+    class="ps-5"
+  >
+    <app-today-meteo
+      [lat]="coordinate[0].lat"
+      [lon]="coordinate[0].lon"
+    ></app-today-meteo>
+    <div class="k-d-grid k-grid-cols-2 k-gap-5 px-5 py-0">
+      <div *ngFor="let card of coordinate.slice(1)">
+        <app-today-meteo
+          [lat]="card.lat"
+          [lon]="card.lon"
+          [chartVisible]="false"
+        ></app-today-meteo>
+      </div>
+    </div>
+  </kendo-stacklayout>
 </div>
- -->
+
+<!-- --------------------------------------------------------------------------------------------------- -->
+
+<div
+  cdkDropList
+  class="k-d-grid k-grid-cols-3 k-gap-4"
+  (cdkDropListDropped)="drop($event)"
+>
+  <div
+    *ngFor="let card of coordinate"
+    cdkDrag
+    class="p-3 border border-primary rounded"
+  >
+    <app-today-meteo
+      [lat]="card.lat"
+      [lon]="card.lon"
+      [chartVisible]="false"
+    ></app-today-meteo>
+
+    <div class="text-muted text-center mt-2">{{ card.location }}</div>
+  </div>
+</div>
+
+<!-- --------------------------------------------------------------------------------------------------- -->

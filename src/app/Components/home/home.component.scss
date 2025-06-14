@@ -2,3 +2,30 @@
   display: flex;
   justify-content: center; /* centro orizzontale */
 }
+
+.wrapper {
+  height: 500px;
+  overflow: auto;
+}
+
+.my-container {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 15px;
+  row-gap: 15px;
+  align-content: flex-start;
+}
+
+.my-drop {
+  padding: 10px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-width: 3px;
+  border-style: solid;
+  border-radius: 5px;
+  border-color: lightgray;
+  transition: border-color 0.2s ease-in-out;
+}

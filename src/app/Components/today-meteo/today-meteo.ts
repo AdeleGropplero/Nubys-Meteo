@@ -1,17 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  input,
+  OnInit,
+} from '@angular/core';
 import { KENDO_LAYOUT } from '@progress/kendo-angular-layout';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { WeatherApiService } from '../../Services/weather-api/weather-api';
 import { lastValueFrom } from 'rxjs';
+import { KENDO_CHARTS } from '@progress/kendo-angular-charts';
 
 @Component({
   selector: 'app-today-meteo',
-  imports: [KENDO_LAYOUT, CommonModule],
+  imports: [KENDO_LAYOUT, CommonModule, KENDO_CHARTS],
   templateUrl: './today-meteo.html',
   styleUrl: './today-meteo.scss',
 })
 export class TodayMeteo implements OnInit {
+  @Input() lat!: number;
+  @Input() lon!: number;
+  @Input() chartVisible: boolean = true;
+
   public weather: any;
   public data: string = '';
   public sunriseT: string = '';
@@ -21,26 +32,45 @@ export class TodayMeteo implements OnInit {
   public windDirection: string = '';
 
   public forecast: any;
+  public pollution: any;
+
+  public other: any;
+
+  public orariGragico: string[] = [];
+  public temperatureOrarie: number[] = [];
 
   constructor(private weatherService: WeatherApiService) {}
 
   async ngOnInit() {
     /* API CALL (GET) weather */
     this.weather = await lastValueFrom(
-      this.weatherService.getOneCallForecast(45.4721, 9.2399)
+      this.weatherService.getWeather(this.lat, this.lon)
     );
 
     console.log('🚀 ~ TodayMeteo ~ ngOnInit ~  this.weather:', this.weather);
 
     /* API CALL (GET) forecast */
     this.forecast = await lastValueFrom(
-      this.weatherService.getForecast(45.4721, 9.2399)
+      this.weatherService.getForecast(this.lat, this.lon)
     );
     console.log('🚀 ~ TodayMeteo ~ ngOnInit ~  this.forecast:', this.forecast);
 
-    /* --------------------------------------------------- */
+    /* API CALL (GET) pollution */
+    this.pollution = await lastValueFrom(
+      this.weatherService.getPollution(this.lat, this.lon)
+    );
+    console.log(
+      '🚀 ~ TodayMeteo ~ ngOnInit ~  this.pollution:',
+      this.pollution
+    );
 
-    this.sunriseT = new Date(
+    /* API CALL (GET) pollution */
+    this.other = await lastValueFrom(
+      this.weatherService.getOther(this.lat, this.lon)
+    );
+    console.log('🚀 ~ TodayMeteo ~ ngOnInit ~  this.other:', this.other);
+
+    https: this.sunriseT = new Date(
       this.weather.sys.sunrise * 1000
     ).toLocaleTimeString([], {
       hour: '2-digit',
@@ -63,6 +93,15 @@ export class TodayMeteo implements OnInit {
     this.windSpeed = `${(this.weather.wind.speed * 3.6).toFixed(1)} km/h`;
     this.windDeg = this.weather.wind.deg;
     this.windDirection = this.getWindDirectionIcon(this.windDeg);
+
+    this.orariGragico = this.getHours(this.other.hourly.time).map((el) => {
+      const ore = el.split('T')[1].split(':')[0];
+      return ore;
+    });
+
+    this.temperatureOrarie = this.getHourlyTemperatures(
+      this.other.hourly.temperature_2m
+    );
   }
 
   /**
@@ -92,6 +131,28 @@ export class TodayMeteo implements OnInit {
         return 'bi-arrow-up';
     }
   }
+  getHours(timeArray: string[]): string[] {
+    const today = new Date().toISOString().split('T')[0];
+    return timeArray.filter((time) => time.startsWith(today));
+  }
+
+  getHourlyTemperatures(tempArr: number[]): number[] {
+    return tempArr.slice(0, 24);
+  }
+
+  /* usiamo una pipe!! 
+  public formatDateToDayMonth(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('it-IT', {
+      day: '2-digit',
+      month: '2-digit',
+    });
+  }
+    
+  etHourlyTemperatures(): number[] {
+  return Array.from({ length: 24 }, (_, i) => i);
+}
+  */
 }
 
 /*   public mobileQuery: MediaQueryList;
