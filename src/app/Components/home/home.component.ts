@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TodayMeteo } from '../today-meteo/today-meteo';
 import { CommonModule } from '@angular/common';
-import { KENDO_LAYOUT } from '@progress/kendo-angular-layout';
+import { KENDO_GRIDLAYOUT, KENDO_LAYOUT } from '@progress/kendo-angular-layout';
 import { KENDO_BUTTONS } from '@progress/kendo-angular-buttons';
 import { KENDO_DRAGANDDROP, KENDO_UTILS } from '@progress/kendo-angular-utils';
 import { Coordinate } from '../../Services/cartellaFinta/coordinate';
@@ -9,7 +9,10 @@ import {
   CdkDragDrop,
   DragDropModule,
   moveItemInArray,
+  transferArrayItem,
 } from '@angular/cdk/drag-drop';
+import { KENDO_SORTABLE } from '@progress/kendo-angular-sortable';
+import { KENDO_GRID } from '@progress/kendo-angular-grid';
 
 @Component({
   selector: 'app-home',
@@ -20,6 +23,8 @@ import {
     KENDO_UTILS,
     KENDO_LAYOUT,
     KENDO_DRAGANDDROP,
+    KENDO_SORTABLE,
+    KENDO_GRID,
     DragDropModule,
   ],
   templateUrl: './home.component.html',
@@ -49,54 +54,80 @@ export class HomeComponent implements OnInit {
 
   public draggedLocation: string | null = null;
   public enteredBox: string | null = null;
-  ngOnInit(): void {}
 
-  public drop(event: CdkDragDrop<Coordinate[]>) {
+  /* ------------------------------------------------------------------ */
+
+  public leftContainer: Coordinate[] = []; // solo uno
+  public rightContainer: Coordinate[] = []; // tutti gli altri
+
+  ngOnInit(): void {
+    // Nubys a sinistra, gli altri a destra
+    const [nubys, ...others] = this.coordinate;
+    this.leftContainer = [nubys];
+    this.rightContainer = others;
+  }
+
+  onDrop(event: CdkDragDrop<Coordinate[]>) {
+    if (event.previousContainer === event.container) {
+      return; // drag interno non gestito qui
+    }
+
+    // Se stai trascinando da destra a sinistra
+    if (event.container.id === 'left') {
+      const incoming = event.previousContainer.data[event.previousIndex];
+      const outgoing = this.leftContainer[0];
+
+      // 1. Rimuovi l'elemento da destra
+      event.previousContainer.data.splice(event.previousIndex, 1);
+
+      // 2. Inserisci l'attuale a destra nello stesso punto (swap)
+      this.rightContainer.splice(event.previousIndex, 0, outgoing);
+
+      // 3. Metti il nuovo elemento a sinistra
+      this.leftContainer[0] = incoming;
+    }
+
+    // Se stai trascinando da sinistra a destra
+    else if (event.container.id === 'right') {
+      const outgoing = event.previousContainer.data[0];
+      this.leftContainer = [];
+
+      // Aggiungi a destra in posizione corretta
+      this.rightContainer.splice(event.currentIndex, 0, outgoing);
+    }
+
+    /*     transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    ); */
+  }
+
+  /* ------------------------------------------------------------------ */
+
+  /*   public drop(event: CdkDragDrop<Coordinate[]>) {
     moveItemInArray(this.coordinate, event.previousIndex, event.currentIndex);
-  }
-}
-
-/*  ngOnInit(): void {
-    this.sortCoordinateById(); // Ordina inizialmente per ID
+    console.log(event.previousIndex, event.currentIndex);
   }
 
-  // Trascinamento: inizio
-  public handleDragStart(location: string): void {
-    this.draggedLocation = location;
+  public onClick(event: MouseEvent) {
+    console.log('Hai cliccato su:', event.target);
+  } */
+  /* -------------------------------------------------------------------------------------------- */
+
+  /*   public currentBox = this.coordinate[0].location;
+  public enteredBox2 = this.coordinate[0].location;
+
+  public handleDragEnter(id: string): void {
+    this.enteredBox = id;
   }
 
-  // Trascinamento: entra in altro box
-  public handleDragEnter(location: string): void {
-    this.enteredBox = location;
-  }
-
-  // Trascinamento: lascia il box
   public handleDragLeave(): void {
     this.enteredBox = '';
   }
 
-  // Rilascio: swap
-  public handleDrop(targetLocation: string): void {
-    if (!this.draggedLocation || this.draggedLocation === targetLocation)
-      return;
-
-    const fromIndex = this.coordinate.findIndex(
-      (c) => c.location === this.draggedLocation
-    );
-    const toIndex = this.coordinate.findIndex(
-      (c) => c.location === targetLocation
-    );
-
-    if (fromIndex !== -1 && toIndex !== -1) {
-      const temp = this.coordinate[fromIndex];
-      this.coordinate[fromIndex] = this.coordinate[toIndex];
-      this.coordinate[toIndex] = temp;
-    }
-
-    this.draggedLocation = null;
-    this.enteredBox = '';
-  }
-
-  private sortCoordinateById(): void {
-    this.coordinate.sort((a, b) => a.id - b.id);
-  } */
+  public handleDrop(id: string): void {
+    this.currentBox = id;
+  }*/
+}
