@@ -51,14 +51,16 @@ export class HomeComponent implements OnInit {
     },
     { id: 6, location: 'Adele', citta: 'Roma', lat: 41.8803, lon: 12.566 },
   ];
-
+  /* 
   public draggedLocation: string | null = null;
-  public enteredBox: string | null = null;
+  public enteredBox: string | null = null; */
 
   /* ------------------------------------------------------------------ */
 
   public leftContainer: Coordinate[] = []; // solo uno
   public rightContainer: Coordinate[] = []; // tutti gli altri
+
+  public isSwapping = false;
 
   ngOnInit(): void {
     // Nubys a sinistra, gli altri a destra
@@ -77,14 +79,20 @@ export class HomeComponent implements OnInit {
       const incoming = event.previousContainer.data[event.previousIndex];
       const outgoing = this.leftContainer[0];
 
-      // 1. Rimuovi l'elemento da destra
-      event.previousContainer.data.splice(event.previousIndex, 1);
+      this.isSwapping = true; // attiva animazione
 
-      // 2. Inserisci l'attuale a destra nello stesso punto (swap)
-      this.rightContainer.splice(event.previousIndex, 0, outgoing);
+      // 1. Dopo X ms fai il vero scambio dei dati
+      setTimeout(() => {
+        // 1. Rimuovi l'elemento da destra
+        event.previousContainer.data.splice(event.previousIndex, 1);
 
-      // 3. Metti il nuovo elemento a sinistra
-      this.leftContainer[0] = incoming;
+        // 2. Inserisci l'attuale a destra nello stesso punto (swap)
+        this.rightContainer.splice(event.previousIndex, 0, outgoing);
+
+        // 3. Metti il nuovo elemento a sinistra
+        this.leftContainer[0] = incoming;
+        this.isSwapping = false;
+      }, 300); // stesso tempo della transizione CSS
     }
 
     // Se stai trascinando da sinistra a destra

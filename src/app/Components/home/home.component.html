@@ -140,7 +140,11 @@
     (cdkDropListDropped)="onDrop($event)"
     class="me-4"
   >
-    <div *ngFor="let card of leftContainer" cdkDrag>
+    <div
+      *ngFor="let card of leftContainer"
+      cdkDrag
+      [class.fade-out]="isSwapping"
+    >
       <app-today-meteo
         [lat]="card.lat"
         [lon]="card.lon"
