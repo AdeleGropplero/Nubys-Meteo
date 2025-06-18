@@ -11,10 +11,11 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { WeatherApiService } from '../../Services/weather-api/weather-api';
 import { lastValueFrom } from 'rxjs';
 import { KENDO_CHARTS } from '@progress/kendo-angular-charts';
+import { KENDO_INDICATORS } from '@progress/kendo-angular-indicators';
 
 @Component({
   selector: 'app-today-meteo',
-  imports: [KENDO_LAYOUT, CommonModule, KENDO_CHARTS],
+  imports: [KENDO_LAYOUT, CommonModule, KENDO_CHARTS, KENDO_INDICATORS],
   templateUrl: './today-meteo.html',
   styleUrl: './today-meteo.scss',
 })
@@ -32,12 +33,13 @@ export class TodayMeteo implements OnInit {
   public windDirection: string = '';
 
   public forecast: any;
-  public pollution: any;
 
   public other: any;
 
   public orariGragico: string[] = [];
   public temperatureOrarie: number[] = [];
+
+  isLoading = true;
 
   constructor(private weatherService: WeatherApiService) {}
 
@@ -54,15 +56,6 @@ export class TodayMeteo implements OnInit {
       this.weatherService.getForecast(this.lat, this.lon)
     );
     console.log('🚀 ~ TodayMeteo ~ ngOnInit ~  this.forecast:', this.forecast);
-
-    /* API CALL (GET) pollution */
-    this.pollution = await lastValueFrom(
-      this.weatherService.getPollution(this.lat, this.lon)
-    );
-    console.log(
-      '🚀 ~ TodayMeteo ~ ngOnInit ~  this.pollution:',
-      this.pollution
-    );
 
     /* API CALL (GET) pollution */
     this.other = await lastValueFrom(
@@ -102,6 +95,8 @@ export class TodayMeteo implements OnInit {
     this.temperatureOrarie = this.getHourlyTemperatures(
       this.other.hourly.temperature_2m
     );
+
+    this.isLoading = false;
   }
 
   /**

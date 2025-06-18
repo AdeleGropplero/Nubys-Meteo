@@ -1,218 +1,323 @@
-<kendo-card
-  class="today-meteo"
-  orientation="vertical"
-  *ngIf="weather &&  other?.daily"
+<!-- SKELETON Card Left----------------------------------------------------------------------------------------------->
+<ng-container *ngIf="isLoading; else contenutoMeteo">
+  <kendo-card class="today-meteo">
+    <kendo-card-header class="d-flex justify-content-between py-4 px-3">
+      <kendo-skeleton
+        shape="text"
+        animation="wave"
+        width="33%"
+      ></kendo-skeleton>
+      <div class="d-flex justify-content-end w-50">
+        <kendo-skeleton
+          class="me-2"
+          shape="circle"
+          animation="wave"
+          [width]="25"
+          [height]="25"
+        ></kendo-skeleton>
+        <kendo-skeleton
+          shape="text"
+          animation="wave"
+          width="40%"
+        ></kendo-skeleton>
+      </div>
+    </kendo-card-header>
+
+    <kendo-card-body>
+      <div class="d-flex justify-content-between pt-2 pb-1">
+        <kendo-skeleton
+          shape="text"
+          animation="wave"
+          width="20%"
+          height="27px"
+        ></kendo-skeleton>
+
+        <kendo-skeleton
+          shape="text"
+          animation="wave"
+          width="20%"
+          height="27px"
+        ></kendo-skeleton>
+      </div>
+      <div class="d-flex justify-content-between pb-1">
+        <kendo-skeleton
+          shape="text"
+          animation="wave"
+          width="22%"
+          height="25px"
+        ></kendo-skeleton>
+
+        <kendo-skeleton
+          shape="text"
+          animation="wave"
+          width="22%"
+          height="25px"
+        ></kendo-skeleton>
+      </div>
+      <div class="d-flex justify-content-between pb-1">
+        <kendo-skeleton
+          shape="text"
+          animation="wave"
+          width="30%"
+          height="25px"
+        ></kendo-skeleton>
+
+        <kendo-skeleton
+          shape="text"
+          animation="wave"
+          width="30%"
+          height="25px"
+        ></kendo-skeleton>
+      </div>
+      <div class="d-flex justify-content-between pb-1">
+        <kendo-skeleton
+          shape="text"
+          animation="wave"
+          width="28%"
+          height="25px"
+        ></kendo-skeleton>
+
+        <kendo-skeleton
+          shape="text"
+          animation="wave"
+          width="28%"
+          height="25px"
+        ></kendo-skeleton>
+      </div>
+
+      <kendo-skeleton
+        *ngIf="chartVisible"
+        shape="rectangle"
+        animation="wave"
+        width="100%"
+        height="400px"
+      ></kendo-skeleton>
+    </kendo-card-body>
+
+    <kendo-card-footer *ngIf="chartVisible" class="k-hbox">
+      <kendo-skeleton
+        *ngIf="chartVisible"
+        shape="text"
+        animation="wave"
+        width="100%"
+      ></kendo-skeleton>
+    </kendo-card-footer>
+  </kendo-card>
+</ng-container>
+<!-------------------------------------------------------------------------------------------------------- -->
+
+<ng-template #contenutoMeteo>
+  <kendo-card
+    class="today-meteo"
+    orientation="vertical"
+    *ngIf="weather &&  other?.daily"
+  >
+    <kendo-card-header class="k-hstack k-align-items-center">
+      <h4 kendoCardTitle>{{weather.name}} - {{data}}</h4>
+      <div class="k-d-flex k-align-items-center">
+        <img
+          [src]="'https://openweathermap.org/img/wn/' + weather.weather[0].icon + '.png'"
+          alt="icona meteo"
+        />
+        <h5 class="m-0">
+          {{(weather.main.temp).toString() | slice : 0 :4}} <span>°C</span>
+        </h5>
+      </div>
+    </kendo-card-header>
+    <kendo-card-body>
+      <div class="k-d-flex k-align-items-center effemeridi">
+        <div class="k-d-flex k-align-items-center">
+          <i class="bi bi-sunrise icona-meteo"></i>
+          <p class="m-0 ms-2">{{sunriseT}}</p>
+        </div>
+        <div class="k-d-flex k-align-items-center">
+          <i class="bi bi-sunset icona-meteo"></i>
+          <p class="m-0 ms-2">{{sunsetT}}</p>
+        </div>
+      </div>
+      <hr kendoCardSeparator />
+      <div class="k-d-flex k-align-items-center effemeridi py-1">
+        <div class="k-d-flex k-align-items-center">
+          <p class="m-0">Min</p>
+          <p class="m-0 ms-2">{{other.daily.temperature_2m_min[0]}} °C</p>
+        </div>
+        <div class="k-d-flex k-align-items-center">
+          <p class="m-0">Max</p>
+          <p class="m-0 ms-2">{{other.daily.temperature_2m_max[0]}} °C</p>
+        </div>
+      </div>
+      <hr kendoCardSeparator />
+      <div class="k-d-flex k-align-items-center effemeridi py-1">
+        <div class="k-d-flex k-align-items-center">
+          <p class="m-0">Percepita</p>
+          <p class="m-0 ms-2">{{weather.main.feels_like}} °C</p>
+        </div>
+        <div class="k-d-flex k-align-items-center">
+          <p class="m-0">Umidità</p>
+          <p class="m-0 ms-2">{{weather.main.humidity}} %</p>
+        </div>
+      </div>
+      <hr kendoCardSeparator />
+      <div class="k-d-flex k-align-items-center effemeridi">
+        <div class="k-d-flex k-align-items-center">
+          <i class="bi bi-wind icona-meteo"></i>
+          <p class="m-0 ms-2">{{windSpeed}}</p>
+        </div>
+        <div class="k-d-flex k-align-items-center">
+          <p class="m-0 me-2">Direzione</p>
+          <i class="bi" [ngClass]="windDirection"></i>
+        </div>
+      </div>
+
+      <hr kendoCardSeparator />
+
+      <!-- #Region Chart -->
+      <!-- I VALORI DELL'ASSE Y SONO GENERATI AUTOMATICAMENTE -->
+      <kendo-chart *ngIf="chartVisible">
+        <kendo-chart-title text="Grafico temperature"></kendo-chart-title>
+
+        <kendo-chart-category-axis>
+          <kendo-chart-category-axis-item
+            [categories]="orariGragico"
+            [title]="{ text: 'Orario' }"
+          >
+          </kendo-chart-category-axis-item>
+        </kendo-chart-category-axis>
+
+        <kendo-chart-series-defaults [highlight]="{ inactiveOpacity: 0.3 }">
+        </kendo-chart-series-defaults>
+
+        <kendo-chart-series>
+          <kendo-chart-series-item
+            type="area"
+            [data]="temperatureOrarie"
+            [color]="'#143A66'"
+            [line]=" {style:'smooth'}"
+            [opacity]=".2"
+          >
+          </kendo-chart-series-item>
+          <kendo-chart-series-item
+            type="line"
+            [data]="temperatureOrarie"
+            [color]="'#143A66'"
+            [line]=" {style:'smooth'}"
+            [markers]="{visible: false}"
+          >
+          </kendo-chart-series-item>
+        </kendo-chart-series>
+      </kendo-chart>
+
+      <hr kendoCardSeparator />
+
+      <div
+        class="k-d-grid k-grid-rows-1 k-grid-flow-col k-gap-1 k-text-center k-w-full k-text-white pt-2"
+        *ngIf="chartVisible"
+      >
+        <div class="">
+          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
+            ><kendo-card-header>Oggi </kendo-card-header
+            ><kendo-card-body
+              ><span class="temp-min"
+                >{{other.daily.temperature_2m_min[0] | number:'1.0-0' }}</span
+              >
+              -
+              <span class="temp-max"
+                >{{other.daily.temperature_2m_max[0] | number:'1.0-0' }}</span
+              ></kendo-card-body
+            ></kendo-card
+          >
+        </div>
+        <div class="">
+          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
+            ><kendo-card-header
+              >{{other.daily.time[1] | date:'dd/MM' }}</kendo-card-header
+            ><kendo-card-body
+              ><span class="temp-min"
+                >{{other.daily.temperature_2m_min[1] | number:'1.0-0' }}</span
+              >
+              -
+              <span class="temp-max"
+                >{{other.daily.temperature_2m_max[1] | number:'1.0-0' }}</span
+              ></kendo-card-body
+            ></kendo-card
+          >
+        </div>
+        <div class="">
+          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
+            ><kendo-card-header
+              >{{other.daily.time[2] | date:'dd/MM' }}</kendo-card-header
+            ><kendo-card-body
+              ><span class="temp-min"
+                >{{other.daily.temperature_2m_min[2] | number:'1.0-0' }}</span
+              >
+              -
+              <span class="temp-max"
+                >{{other.daily.temperature_2m_max[2] | number:'1.0-0' }}</span
+              ></kendo-card-body
+            ></kendo-card
+          >
+        </div>
+        <div class="">
+          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
+            ><kendo-card-header
+              >{{other.daily.time[3] | date:'dd/MM' }}</kendo-card-header
+            ><kendo-card-body
+              ><span class="temp-min"
+                >{{other.daily.temperature_2m_min[3] | number:'1.0-0' }}</span
+              >
+              -
+              <span class="temp-max"
+                >{{other.daily.temperature_2m_max[3] | number:'1.0-0' }}</span
+              ></kendo-card-body
+            ></kendo-card
+          >
+        </div>
+        <div class="">
+          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
+            ><kendo-card-header
+              >{{other.daily.time[4] | date:'dd/MM' }}</kendo-card-header
+            ><kendo-card-body
+              ><span class="temp-min"
+                >{{other.daily.temperature_2m_min[4] | number:'1.0-0' }}</span
+              >
+              -
+              <span class="temp-max"
+                >{{other.daily.temperature_2m_max[4] | number:'1.0-0' }}</span
+              ></kendo-card-body
+            ></kendo-card
+          >
+        </div>
+        <div class="">
+          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
+            ><kendo-card-header
+              >{{other.daily.time[5] | date:'dd/MM' }}</kendo-card-header
+            ><kendo-card-body
+              ><span class="temp-min"
+                >{{other.daily.temperature_2m_min[5] | number:'1.0-0' }}</span
+              >
+              -
+              <span class="temp-max"
+                >{{other.daily.temperature_2m_max[5] | number:'1.0-0' }}</span
+              ></kendo-card-body
+            ></kendo-card
+          >
+        </div>
+        <div class="">
+          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
+            ><kendo-card-header
+              >{{other.daily.time[6] | date:'dd/MM' }}</kendo-card-header
+            ><kendo-card-body
+              ><span class="temp-min"
+                >{{other.daily.temperature_2m_min[6] | number:'1.0-0' }}</span
+              >
+              -
+              <span class="temp-max"
+                >{{other.daily.temperature_2m_max[6] | number:'1.0-0' }}</span
+              ></kendo-card-body
+            ></kendo-card
+          >
+        </div>
+      </div>
+    </kendo-card-body>
+  </kendo-card></ng-template
 >
-  <kendo-card-header class="k-hstack k-align-items-center">
-    <h4 kendoCardTitle>{{weather.name}} - {{data}}</h4>
-    <div class="k-d-flex k-align-items-center">
-      <img
-        [src]="'https://openweathermap.org/img/wn/' + weather.weather[0].icon + '.png'"
-        alt="icona meteo"
-      />
-      <h5 class="m-0">
-        {{(weather.main.temp).toString() | slice : 0 :4}} <span>°C</span>
-      </h5>
-    </div>
-  </kendo-card-header>
-  <kendo-card-body>
-    <div class="k-d-flex k-align-items-center effemeridi">
-      <div class="k-d-flex k-align-items-center">
-        <i class="bi bi-sunrise icona-meteo"></i>
-        <p class="m-0 ms-2">{{sunriseT}}</p>
-      </div>
-      <div class="k-d-flex k-align-items-center">
-        <i class="bi bi-sunset icona-meteo"></i>
-        <p class="m-0 ms-2">{{sunsetT}}</p>
-      </div>
-    </div>
-    <hr kendoCardSeparator />
-    <div class="k-d-flex k-align-items-center effemeridi py-1">
-      <div class="k-d-flex k-align-items-center">
-        <p class="m-0">Min</p>
-        <p class="m-0 ms-2">{{other.daily.temperature_2m_min[0]}} °C</p>
-      </div>
-      <div class="k-d-flex k-align-items-center">
-        <p class="m-0">Max</p>
-        <p class="m-0 ms-2">{{other.daily.temperature_2m_max[0]}} °C</p>
-      </div>
-    </div>
-    <hr kendoCardSeparator />
-    <div class="k-d-flex k-align-items-center effemeridi py-1">
-      <div class="k-d-flex k-align-items-center">
-        <p class="m-0">Percepita</p>
-        <p class="m-0 ms-2">{{weather.main.feels_like}} °C</p>
-      </div>
-      <div class="k-d-flex k-align-items-center">
-        <p class="m-0">Umidità</p>
-        <p class="m-0 ms-2">{{weather.main.humidity}} %</p>
-      </div>
-    </div>
-    <hr kendoCardSeparator />
-    <div class="k-d-flex k-align-items-center effemeridi">
-      <div class="k-d-flex k-align-items-center">
-        <i class="bi bi-wind icona-meteo"></i>
-        <p class="m-0 ms-2">{{windSpeed}}</p>
-      </div>
-      <div class="k-d-flex k-align-items-center">
-        <p class="m-0 me-2">Direzione</p>
-        <i class="bi" [ngClass]="windDirection"></i>
-      </div>
-    </div>
-
-    <hr kendoCardSeparator />
-
-    <!-- #Region Chart -->
-    <!-- I VALORI DELL'ASSE Y SONO GENERATI AUTOMATICAMENTE -->
-    <kendo-chart *ngIf="chartVisible">
-      <kendo-chart-title text="Grafico temperature"></kendo-chart-title>
-
-      <kendo-chart-category-axis>
-        <kendo-chart-category-axis-item
-          [categories]="orariGragico"
-          [title]="{ text: 'Orario' }"
-        >
-        </kendo-chart-category-axis-item>
-      </kendo-chart-category-axis>
-
-      <kendo-chart-series-defaults [highlight]="{ inactiveOpacity: 0.3 }">
-      </kendo-chart-series-defaults>
-
-      <kendo-chart-series>
-        <kendo-chart-series-item
-          type="area"
-          [data]="temperatureOrarie"
-          [color]="'#143A66'"
-          [line]=" {style:'smooth'}"
-          [opacity]=".2"
-        >
-        </kendo-chart-series-item>
-        <kendo-chart-series-item
-          type="line"
-          [data]="temperatureOrarie"
-          [color]="'#143A66'"
-          [line]=" {style:'smooth'}"
-          [markers]="{visible: false}"
-        >
-        </kendo-chart-series-item>
-      </kendo-chart-series>
-    </kendo-chart>
-
-    <hr kendoCardSeparator />
-
-    <div
-      class="k-d-grid k-grid-rows-1 k-grid-flow-col k-gap-1 k-text-center k-w-full k-text-white pt-2"
-      *ngIf="chartVisible"
-    >
-      <div class="">
-        <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-          ><kendo-card-header>Oggi </kendo-card-header
-          ><kendo-card-body
-            ><span class="temp-min"
-              >{{other.daily.temperature_2m_min[0] | number:'1.0-0' }}</span
-            >
-            -
-            <span class="temp-max"
-              >{{other.daily.temperature_2m_max[0] | number:'1.0-0' }}</span
-            ></kendo-card-body
-          ></kendo-card
-        >
-      </div>
-      <div class="">
-        <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-          ><kendo-card-header
-            >{{other.daily.time[1] | date:'dd/MM' }}</kendo-card-header
-          ><kendo-card-body
-            ><span class="temp-min"
-              >{{other.daily.temperature_2m_min[1] | number:'1.0-0' }}</span
-            >
-            -
-            <span class="temp-max"
-              >{{other.daily.temperature_2m_max[1] | number:'1.0-0' }}</span
-            ></kendo-card-body
-          ></kendo-card
-        >
-      </div>
-      <div class="">
-        <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-          ><kendo-card-header
-            >{{other.daily.time[2] | date:'dd/MM' }}</kendo-card-header
-          ><kendo-card-body
-            ><span class="temp-min"
-              >{{other.daily.temperature_2m_min[2] | number:'1.0-0' }}</span
-            >
-            -
-            <span class="temp-max"
-              >{{other.daily.temperature_2m_max[2] | number:'1.0-0' }}</span
-            ></kendo-card-body
-          ></kendo-card
-        >
-      </div>
-      <div class="">
-        <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-          ><kendo-card-header
-            >{{other.daily.time[3] | date:'dd/MM' }}</kendo-card-header
-          ><kendo-card-body
-            ><span class="temp-min"
-              >{{other.daily.temperature_2m_min[3] | number:'1.0-0' }}</span
-            >
-            -
-            <span class="temp-max"
-              >{{other.daily.temperature_2m_max[3] | number:'1.0-0' }}</span
-            ></kendo-card-body
-          ></kendo-card
-        >
-      </div>
-      <div class="">
-        <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-          ><kendo-card-header
-            >{{other.daily.time[4] | date:'dd/MM' }}</kendo-card-header
-          ><kendo-card-body
-            ><span class="temp-min"
-              >{{other.daily.temperature_2m_min[4] | number:'1.0-0' }}</span
-            >
-            -
-            <span class="temp-max"
-              >{{other.daily.temperature_2m_max[4] | number:'1.0-0' }}</span
-            ></kendo-card-body
-          ></kendo-card
-        >
-      </div>
-      <div class="">
-        <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-          ><kendo-card-header
-            >{{other.daily.time[5] | date:'dd/MM' }}</kendo-card-header
-          ><kendo-card-body
-            ><span class="temp-min"
-              >{{other.daily.temperature_2m_min[5] | number:'1.0-0' }}</span
-            >
-            -
-            <span class="temp-max"
-              >{{other.daily.temperature_2m_max[5] | number:'1.0-0' }}</span
-            ></kendo-card-body
-          ></kendo-card
-        >
-      </div>
-      <div class="">
-        <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-          ><kendo-card-header
-            >{{other.daily.time[6] | date:'dd/MM' }}</kendo-card-header
-          ><kendo-card-body
-            ><span class="temp-min"
-              >{{other.daily.temperature_2m_min[6] | number:'1.0-0' }}</span
-            >
-            -
-            <span class="temp-max"
-              >{{other.daily.temperature_2m_max[6] | number:'1.0-0' }}</span
-            ></kendo-card-body
-          ></kendo-card
-        >
-      </div>
-    </div>
-  </kendo-card-body>
-</kendo-card>
-
-<!-- 
-
-
--->
