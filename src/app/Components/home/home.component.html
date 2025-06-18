@@ -1,7 +1,7 @@
 <kendo-stacklayout
   orientation="horizontal"
   [align]="{ vertical: 'top' }"
-  class="p-5 mt-5"
+  class="p-5"
   cdkDropListGroup
 >
   <!-- Contenitore SINISTRA (1 solo elemento con grafico) -->
@@ -23,7 +23,6 @@
         [lon]="card.lon"
         [chartVisible]="true"
       ></app-today-meteo>
-      <div class="text-muted mt-2 text-center">{{ card.location }}</div>
     </div>
   </div>
 
@@ -41,9 +40,59 @@
         [lon]="card.lon"
         [chartVisible]="false"
       ></app-today-meteo>
-      <div class="text-muted mt-2">{{ card.location }}</div>
+    </div>
+
+    <!-- Card per aggiungere nuova città -->
+    <div
+      class="add-card d-flex justify-content-center align-items-center"
+      (click)="showSearch = true; openDialog()"
+    >
+      <i class="bi bi-plus"></i>
     </div>
   </div>
+
+  <ng-template #dialogTemplate>
+    <div
+      class="example-dialog-content"
+      cdkDrag
+      cdkDragRootElement=".cdk-overlay-pane"
+    >
+      <div>
+        <!-- Barra di ricerca visualizzata se `showSearch` è true -->
+        <kendo-label [for]="citta" text="Città" class="p-3"></kendo-label>
+        <div *ngIf="showSearch" class="d-flex mb-4">
+          <div class="container-fluid">
+            <form *ngIf="showSearch" class="d-flex" role="search">
+              <input
+                class="form-control me-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+                [(ngModel)]="searchCity"
+                name="search"
+              />
+              <button
+                class="btn btn-outline-success"
+                (click)="searchCityName()"
+                type="submit"
+              >
+                Search
+              </button>
+            </form>
+          </div>
+        </div>
+        <ul *ngIf="citta.length > 0" class="result-list mt-3">
+          <li
+            *ngFor="let city of citta"
+            (click)="selectCity(city); $event.preventDefault()"
+            class="result-item"
+          >
+            {{ city.name }}, {{ city.state }} ,{{ city.country }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </ng-template>
 </kendo-stacklayout>
 
 <!-- PROVE PRECEDENTI -->

@@ -1,4 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  Injector,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import { TodayMeteo } from '../today-meteo/today-meteo';
 import { CommonModule } from '@angular/common';
 import { KENDO_GRIDLAYOUT, KENDO_LAYOUT } from '@progress/kendo-angular-layout';
@@ -6,6 +14,7 @@ import { KENDO_BUTTONS } from '@progress/kendo-angular-buttons';
 import { KENDO_DRAGANDDROP, KENDO_UTILS } from '@progress/kendo-angular-utils';
 import { Coordinate } from '../../Services/cartellaFinta/coordinate';
 import {
+  CdkDrag,
   CdkDragDrop,
   DragDropModule,
   moveItemInArray,
@@ -14,6 +23,17 @@ import {
 import { KENDO_SORTABLE } from '@progress/kendo-angular-sortable';
 import { KENDO_GRID } from '@progress/kendo-angular-grid';
 import { KENDO_INDICATORS } from '@progress/kendo-angular-indicators';
+import { FormsModule } from '@angular/forms';
+import { WeatherApiService } from '../../Services/weather-api/weather-api';
+import { lastValueFrom } from 'rxjs';
+import {
+  createGlobalPositionStrategy,
+  createOverlayRef,
+  OverlayRef,
+} from '@angular/cdk/overlay';
+import { TemplatePortal } from '@angular/cdk/portal';
+import { KENDO_DROPDOWNS } from '@progress/kendo-angular-dropdowns';
+import { KENDO_LABEL } from '@progress/kendo-angular-label';
 
 @Component({
   selector: 'app-home',
@@ -26,8 +46,12 @@ import { KENDO_INDICATORS } from '@progress/kendo-angular-indicators';
     KENDO_DRAGANDDROP,
     KENDO_SORTABLE,
     KENDO_GRID,
+    CdkDrag,
+    FormsModule,
     DragDropModule,
     KENDO_INDICATORS,
+    KENDO_DROPDOWNS,
+    KENDO_LABEL,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
@@ -59,16 +83,16 @@ export class HomeComponent implements OnInit {
   public thumbnailUrl = 'assets/indicators/skeleton/card-thumbnail.jpg';
   public avatarUrl = 'assets/indicators/skeleton/user-avatar.jpg';
   public description = 'Having so much fun in Prague! #NaZdravi';
-  /* 
-  public draggedLocation: string | null = null;
-  public enteredBox: string | null = null; */
 
-  /* ------------------------------------------------------------------ */
+  public showSearch = false;
+  public searchCity = '';
 
   public leftContainer: Coordinate[] = []; // solo uno
   public rightContainer: Coordinate[] = []; // tutti gli altri
 
   public isSwapping = false;
+
+  public citta: any[] = [];
 
   ngOnInit(): void {
     // Nubys a sinistra, gli altri a destra
@@ -102,6 +126,106 @@ export class HomeComponent implements OnInit {
         this.isSwapping = false;
       }, 300); // stesso tempo della transizione CSS
     }
+  }
+
+  constructor(private weatherService: WeatherApiService) {}
+
+  /*   async addCity() {
+    if (!this.searchCity.trim()) return;
+
+    try {
+      const result = await lastValueFrom(
+        this.weatherService.getByCity(this.searchCity.trim())
+      );
+      if (result.length > 0) {
+        const found = result[0];
+        const nuovaCitta: Coordinate = {
+          id: this.coordinate.length + 1,
+          location: found.name,
+          citta: found.name,
+          lat: found.lat,
+          lon: found.lon,
+        };
+
+        // Aggiungila sia all'array principale che a rightContainer
+        this.coordinate.push(nuovaCitta);
+        this.rightContainer.push(nuovaCitta);
+        this.searchCity = ''; // reset campo input
+      } else {
+        alert('Città non trovata');
+      }
+
+      console.log('New City Added', result);
+    } catch (err) {
+      console.error('Errore durante la ricerca:', err);
+      alert('Errore durante la ricerca');
+    }
+  } */
+
+  async searchCityName() {
+    if (!this.searchCity || this.searchCity.trim() === '') {
+      return;
+    }
+    try {
+      const result = await lastValueFrom(
+        this.weatherService.getByCity(this.searchCity)
+      );
+      this.citta = result;
+      console.log('RISULTATO:', result);
+    } catch (err) {
+      console.error('Errore durante la ricerca:', err);
+      alert('Errore durante la ricerca');
+    }
+  }
+
+  selectCity(city: any) {
+    const nuovaCitta: Coordinate = {
+      id: this.coordinate.length + 1,
+      location: city.name,
+      citta: city.name,
+      lat: city.lat,
+      lon: city.lon,
+    };
+
+    this.coordinate.push(nuovaCitta);
+    this.rightContainer.push(nuovaCitta);
+    this.searchCity = '';
+    this.citta = []; // Nasconde la lista
+    this._overlayRef?.detach(); // Chiude il dialog
+  }
+
+  /* Open Dialog */
+  private _injector = inject(Injector);
+  private _viewContainerRef = inject(ViewContainerRef);
+
+  openDialog() {
+    if (this._overlayRef && this._portal) {
+      this._overlayRef.attach(this._portal);
+    }
+  }
+
+  @ViewChild('dialogTemplate') _dialogTemplate!: TemplateRef<any>;
+  private _overlayRef: OverlayRef | undefined;
+  private _portal: TemplatePortal | undefined;
+
+  ngAfterViewInit() {
+    this._portal = new TemplatePortal(
+      this._dialogTemplate,
+      this._viewContainerRef
+    );
+    this._overlayRef = createOverlayRef(this._injector, {
+      positionStrategy: createGlobalPositionStrategy(this._injector)
+        .centerHorizontally()
+        .centerVertically(),
+      hasBackdrop: true,
+    });
+    this._overlayRef
+      .backdropClick()
+      .subscribe(() => this._overlayRef?.detach());
+  }
+
+  ngOnDestroy() {
+    this._overlayRef?.dispose();
   }
 }
 
