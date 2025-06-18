@@ -1,3 +1,137 @@
+<kendo-stacklayout
+  orientation="horizontal"
+  [align]="{ vertical: 'top' }"
+  class="p-5 mt-5"
+  cdkDropListGroup
+>
+  <!-- Contenitore SINISTRA (1 solo elemento con grafico) -->
+  <div
+    cdkDropList
+    id="left"
+    [cdkDropListData]="leftContainer"
+    (cdkDropListDropped)="onDrop($event)"
+    class="me-4"
+  >
+    <div
+      *ngFor="let card of leftContainer"
+      cdkDrag
+      [class.fade-out]="isSwapping"
+    >
+      <app-today-meteo
+        class="lefty"
+        [lat]="card.lat"
+        [lon]="card.lon"
+        [chartVisible]="true"
+      ></app-today-meteo>
+      <div class="text-muted mt-2 text-center">{{ card.location }}</div>
+    </div>
+  </div>
+
+  <!-- Contenitore DESTRA (altri con chartVisible = false) -->
+  <div
+    cdkDropList
+    id="right"
+    [cdkDropListData]="rightContainer"
+    (cdkDropListDropped)="onDrop($event)"
+    class="k-d-grid k-grid-cols-2 k-gap-4"
+  >
+    <div *ngFor="let card of rightContainer" cdkDrag>
+      <app-today-meteo
+        [lat]="card.lat"
+        [lon]="card.lon"
+        [chartVisible]="false"
+      ></app-today-meteo>
+      <div class="text-muted mt-2">{{ card.location }}</div>
+    </div>
+  </div>
+</kendo-stacklayout>
+
+<!-- SKELETON Card Left----------------------------------------------------------------------------------------------->
+<kendo-card width="45%" style="max-width: 350px">
+  <kendo-card-header class="d-flex justify-content-between p-3">
+    <kendo-skeleton shape="text" animation="wave" width="30%"></kendo-skeleton>
+    <div class="d-flex justify-content-end w-50">
+      <kendo-skeleton
+        class="me-2"
+        shape="circle"
+        animation="wave"
+        [width]="20"
+        [height]="20"
+      ></kendo-skeleton>
+      <kendo-skeleton
+        shape="text"
+        animation="wave"
+        width="30%"
+      ></kendo-skeleton>
+    </div>
+  </kendo-card-header>
+
+  <kendo-card-body>
+    <div class="justify-content-between">
+      <kendo-skeleton
+        shape="text"
+        animation="wave"
+        width="30%"
+      ></kendo-skeleton>
+      <kendo-skeleton
+        shape="text"
+        animation="wave"
+        width="30%"
+      ></kendo-skeleton>
+    </div>
+    <kendo-skeleton
+      shape="rectangle"
+      animation="wave"
+      width="100%"
+      height="143.86px"
+    ></kendo-skeleton>
+  </kendo-card-body>
+
+  <kendo-card-footer class="k-hbox">
+    <kendo-skeleton shape="text" animation="wave" width="100%"></kendo-skeleton>
+  </kendo-card-footer>
+</kendo-card>
+
+<!-------------------------------------------------------------------------------------------------------- -->
+<!-- SKELETON Cards right----------------------------------------------------------------------------------------------->
+<kendo-card width="45%" style="max-width: 350px">
+  <kendo-card-header class="k-hbox">
+    <kendo-skeleton
+      shape="circle"
+      animation="wave"
+      [width]="40"
+      [height]="40"
+    ></kendo-skeleton>
+    <div [ngStyle]="{ flex: '1 1 50%', marginLeft: '16px' }">
+      <kendo-skeleton
+        shape="text"
+        animation="wave"
+        width="100%"
+      ></kendo-skeleton>
+      <kendo-skeleton
+        shape="text"
+        animation="wave"
+        width="40%"
+      ></kendo-skeleton>
+    </div>
+  </kendo-card-header>
+
+  <kendo-skeleton
+    shape="rectangle"
+    animation="wave"
+    width="100%"
+    height="143.86px"
+  ></kendo-skeleton>
+
+  <kendo-card-footer class="k-hbox">
+    <kendo-skeleton shape="text" animation="wave" width="100%"></kendo-skeleton>
+  </kendo-card-footer>
+</kendo-card>
+
+<!-------------------------------------------------------------------------------------------------------- -->
+
+<!-- PROVE PRECEDENTI -->
+
 <!-- <div class="border-end border-primary pt-4 home">
   <kendo-stacklayout
     orientation="horizontal"
@@ -125,53 +259,6 @@
   </div>
 </div>
  -->
-
-<kendo-stacklayout
-  orientation="horizontal"
-  [align]="{ vertical: 'top' }"
-  class="p-5 mt-5"
-  cdkDropListGroup
->
-  <!-- Contenitore SINISTRA (1 solo elemento con grafico) -->
-  <div
-    cdkDropList
-    id="left"
-    [cdkDropListData]="leftContainer"
-    (cdkDropListDropped)="onDrop($event)"
-    class="me-4"
-  >
-    <div
-      *ngFor="let card of leftContainer"
-      cdkDrag
-      [class.fade-out]="isSwapping"
-    >
-      <app-today-meteo
-        [lat]="card.lat"
-        [lon]="card.lon"
-        [chartVisible]="true"
-      ></app-today-meteo>
-      <div class="text-muted mt-2 text-center">{{ card.location }}</div>
-    </div>
-  </div>
-
-  <!-- Contenitore DESTRA (altri con chartVisible = false) -->
-  <div
-    cdkDropList
-    id="right"
-    [cdkDropListData]="rightContainer"
-    (cdkDropListDropped)="onDrop($event)"
-    class="k-d-grid k-grid-cols-2 k-gap-4"
-  >
-    <div *ngFor="let card of rightContainer" cdkDrag>
-      <app-today-meteo
-        [lat]="card.lat"
-        [lon]="card.lon"
-        [chartVisible]="false"
-      ></app-today-meteo>
-      <div class="text-muted mt-2">{{ card.location }}</div>
-    </div>
-  </div>
-</kendo-stacklayout>
 
 <!-- <div class="d-flex justify-content-evenly mt-5">
   <kendo-sortable

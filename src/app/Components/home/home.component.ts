@@ -13,6 +13,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { KENDO_SORTABLE } from '@progress/kendo-angular-sortable';
 import { KENDO_GRID } from '@progress/kendo-angular-grid';
+import { KENDO_INDICATORS } from '@progress/kendo-angular-indicators';
 
 @Component({
   selector: 'app-home',
@@ -26,6 +27,7 @@ import { KENDO_GRID } from '@progress/kendo-angular-grid';
     KENDO_SORTABLE,
     KENDO_GRID,
     DragDropModule,
+    KENDO_INDICATORS,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
@@ -51,6 +53,12 @@ export class HomeComponent implements OnInit {
     },
     { id: 6, location: 'Adele', citta: 'Roma', lat: 41.8803, lon: 12.566 },
   ];
+
+  public loading = true;
+
+  public thumbnailUrl = 'assets/indicators/skeleton/card-thumbnail.jpg';
+  public avatarUrl = 'assets/indicators/skeleton/user-avatar.jpg';
+  public description = 'Having so much fun in Prague! #NaZdravi';
   /* 
   public draggedLocation: string | null = null;
   public enteredBox: string | null = null; */
@@ -94,27 +102,28 @@ export class HomeComponent implements OnInit {
         this.isSwapping = false;
       }, 300); // stesso tempo della transizione CSS
     }
+  }
+}
 
-    // Se stai trascinando da sinistra a destra
-    else if (event.container.id === 'right') {
+// Se stai trascinando da sinistra a destra ---> non possibile sempre un elemento a sinistra!
+/*     else if (event.container.id === 'right') {
       const outgoing = event.previousContainer.data[0];
       this.leftContainer = [];
 
       // Aggiungi a destra in posizione corretta
       this.rightContainer.splice(event.currentIndex, 0, outgoing);
     }
-
-    /*     transferArrayItem(
+ */
+/*     transferArrayItem(
       event.previousContainer.data,
       event.container.data,
       event.previousIndex,
       event.currentIndex
     ); */
-  }
 
-  /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
 
-  /*   public drop(event: CdkDragDrop<Coordinate[]>) {
+/*   public drop(event: CdkDragDrop<Coordinate[]>) {
     moveItemInArray(this.coordinate, event.previousIndex, event.currentIndex);
     console.log(event.previousIndex, event.currentIndex);
   }
@@ -122,9 +131,9 @@ export class HomeComponent implements OnInit {
   public onClick(event: MouseEvent) {
     console.log('Hai cliccato su:', event.target);
   } */
-  /* -------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------- */
 
-  /*   public currentBox = this.coordinate[0].location;
+/*   public currentBox = this.coordinate[0].location;
   public enteredBox2 = this.coordinate[0].location;
 
   public handleDragEnter(id: string): void {
@@ -138,4 +147,3 @@ export class HomeComponent implements OnInit {
   public handleDrop(id: string): void {
     this.currentBox = id;
   }*/
-}
