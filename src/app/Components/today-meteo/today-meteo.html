@@ -110,7 +110,7 @@
   <kendo-card
     class="today-meteo"
     orientation="vertical"
-    *ngIf="weather &&  other?.daily"
+    *ngIf="weather && other?.daily"
   >
     <kendo-card-header class="k-hstack k-align-items-center">
       <h4 kendoCardTitle>{{weather.name}} - {{data}}</h4>
@@ -122,6 +122,9 @@
         <h5 class="m-0">
           {{(weather.main.temp).toString() | slice : 0 :4}} <span>°C</span>
         </h5>
+        <button class="m-0 p-2 ms-1 btn" (click)="onDeleteClick()">
+          <i class="bi bi-x-lg icona-meteo"></i>
+        </button>
       </div>
     </kendo-card-header>
     <kendo-card-body>

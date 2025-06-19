@@ -2,9 +2,11 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   Input,
   input,
   OnInit,
+  Output,
 } from '@angular/core';
 import { KENDO_LAYOUT } from '@progress/kendo-angular-layout';
 import { MediaMatcher } from '@angular/cdk/layout';
@@ -23,6 +25,8 @@ export class TodayMeteo implements OnInit {
   @Input() lat!: number;
   @Input() lon!: number;
   @Input() chartVisible: boolean = true;
+  @Input() id!: number;
+  @Output() deleteRequest = new EventEmitter<number>();
 
   public weather: any;
   public data: string = '';
@@ -133,6 +137,10 @@ export class TodayMeteo implements OnInit {
 
   getHourlyTemperatures(tempArr: number[]): number[] {
     return tempArr.slice(0, 24);
+  }
+
+  public onDeleteClick() {
+    this.deleteRequest.emit(this.id); // emette l'id al padre
   }
 
   /* usiamo una pipe!! 

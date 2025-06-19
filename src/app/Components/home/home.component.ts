@@ -25,7 +25,7 @@ import { KENDO_GRID } from '@progress/kendo-angular-grid';
 import { KENDO_INDICATORS } from '@progress/kendo-angular-indicators';
 import { FormsModule } from '@angular/forms';
 import { WeatherApiService } from '../../Services/weather-api/weather-api';
-import { lastValueFrom } from 'rxjs';
+import { debounceTime, lastValueFrom, Subject, Subscription } from 'rxjs';
 import {
   createGlobalPositionStrategy,
   createOverlayRef,
@@ -34,6 +34,13 @@ import {
 import { TemplatePortal } from '@angular/cdk/portal';
 import { KENDO_DROPDOWNS } from '@progress/kendo-angular-dropdowns';
 import { KENDO_LABEL } from '@progress/kendo-angular-label';
+import {
+  KENDO_DIALOGS,
+  DialogAnimation,
+  DialogAnimationType,
+  AnimationDirection,
+  WindowState,
+} from '@progress/kendo-angular-dialog';
 
 @Component({
   selector: 'app-home',
@@ -52,6 +59,7 @@ import { KENDO_LABEL } from '@progress/kendo-angular-label';
     KENDO_INDICATORS,
     KENDO_DROPDOWNS,
     KENDO_LABEL,
+    KENDO_DIALOGS,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
@@ -94,12 +102,155 @@ export class HomeComponent implements OnInit {
 
   public citta: any[] = [];
 
+  public under6Element: boolean = true;
+
+  private searchInput$ = new Subject<string>();
+  public opened = false;
+  public isDraggable = true;
+  public windowState: WindowState = 'default';
+
+  private searchInputSubscription?: Subscription;
+
+  constructor(private weatherService: WeatherApiService) {}
+
+  //#region onInit
+
   ngOnInit(): void {
     // Nubys a sinistra, gli altri a destra
     const [nubys, ...others] = this.coordinate;
     this.leftContainer = [nubys];
     this.rightContainer = others;
+    this.getLocalStorage();
+
+    this.searchInputSubscription = this.searchInput$
+      .pipe(debounceTime(500))
+      .subscribe((value) => this.searchCityName(value));
   }
+
+  onSearchChange(value: string) {
+    this.searchInput$.next(value);
+    /*
+     Perché usiamo Subject nella search bar?
+     - Emettere eventi manualmente ogni volta che l’utente digita (.next(val))
+     - Sottoscrivere questi eventi con un debounceTime() e fare la chiamata API
+     In pratica:
+     - Ogni ngModelChange → searchInput$.next(val)
+     - Il Subject li riceve e "trasmette" agli operatori RxJS
+     - Dopo 500ms di silenzio → esegue la chiamata
+     */
+  }
+
+  //#region LocalStorage
+
+  public saveStateToLocalStorage() {
+    const state = {
+      lefty: this.leftContainer.map((c) => c.id),
+      righty: this.rightContainer.map((c) => c.id),
+      items: this.coordinate,
+    };
+    localStorage.setItem('Ordine_Array', JSON.stringify(state));
+  }
+
+  public getLocalStorage() {
+    const saved = localStorage.getItem('Ordine_Array');
+    if (saved) {
+      const state = JSON.parse(saved);
+
+      this.coordinate = state.items;
+
+      const copiaCoordinate = [...this.coordinate];
+
+      this.leftContainer = state.lefty
+        .map((id: number) => copiaCoordinate.find((c) => c.id === id))
+        .filter((c: Coordinate | undefined): c is Coordinate => !!c); //type guard approfondire meglio
+
+      this.rightContainer = state.righty
+        .map((id: number) => copiaCoordinate.find((c) => c.id === id))
+        .filter((c: Coordinate | undefined): c is Coordinate => !!c); //type guard
+
+      this.under6Element = this.rightContainer.length < 6;
+    } else {
+      // init di default
+      const [nubys, ...others] = this.coordinate;
+      this.leftContainer = [nubys];
+      this.rightContainer = others;
+      this.saveStateToLocalStorage();
+    }
+  }
+
+  //delete
+  public deleteFromLocalStorage(id: number) {
+    const indexInLeft = this.leftContainer.findIndex((c) => c.id === id);
+    const indexInRight = this.rightContainer.findIndex((c) => c.id === id);
+
+    // Se è nel contenitore di destra
+    if (indexInRight > -1) {
+      this.rightContainer.splice(indexInRight, 1);
+    }
+
+    // Se è nel contenitore di sinistra
+    if (indexInLeft > -1) {
+      this.leftContainer.splice(indexInLeft, 1);
+
+      // Reinserisci un nuovo elemento da destra a sinistra (se disponibile)
+      if (this.rightContainer.length > 0) {
+        const replacement = this.rightContainer.shift(); // rimuove il primo da destra e restituisce quindi lo uso anche
+        // sul left container.
+        if (replacement) {
+          this.leftContainer.push(replacement);
+        }
+      }
+    }
+
+    this.under6Element = this.rightContainer.length < 6;
+    this.saveStateToLocalStorage();
+  }
+
+  //#region SearchBar
+
+  async searchCityName(value: string) {
+    if (!this.searchCity || this.searchCity.trim() === '') {
+      return;
+    }
+    try {
+      const result = await lastValueFrom(
+        this.weatherService.getByCity(this.searchCity)
+      );
+      this.citta = result;
+      console.log('RISULTATO:', result);
+    } catch (err) {
+      console.error('Errore durante la ricerca:', err);
+      this.citta = [];
+    }
+  }
+
+  selectCity(city: any) {
+    const nuovaCitta: Coordinate = {
+      id: this.coordinate.length + 1,
+      location: city.name,
+      citta: city.name,
+      lat: city.lat,
+      lon: city.lon,
+    };
+
+    this.coordinate.push(nuovaCitta);
+    this.rightContainer.push(nuovaCitta);
+    this.searchCity = '';
+    this.citta = []; // Nasconde la lista
+    /*     this._overlayRef?.detach(); // Chiude il dialog */
+    this.saveStateToLocalStorage();
+    this.openClose(false);
+
+    if (this.rightContainer.length >= 6) {
+      this.under6Element = false;
+    }
+  }
+
+  public openClose(isOpened: boolean): void {
+    this.opened = isOpened;
+  }
+
+  //#region onDrop
 
   onDrop(event: CdkDragDrop<Coordinate[]>) {
     if (event.previousContainer === event.container) {
@@ -126,11 +277,48 @@ export class HomeComponent implements OnInit {
         this.isSwapping = false;
       }, 300); // stesso tempo della transizione CSS
     }
+    this.saveStateToLocalStorage();
   }
 
-  constructor(private weatherService: WeatherApiService) {}
+  //#region OnDestroy
 
-  /*   async addCity() {
+  ngOnDestroy() {
+    this.searchInputSubscription?.unsubscribe();
+    /*    this._overlayRef?.dispose(); */
+  }
+
+  /*   //#region Dialog
+  private _injector = inject(Injector);
+  private _viewContainerRef = inject(ViewContainerRef); */
+
+  /*   openDialog() {
+    if (this._overlayRef && this._portal) {
+      this._overlayRef.attach(this._portal);
+    }
+  }
+
+  @ViewChild('dialogTemplate') _dialogTemplate!: TemplateRef<any>;
+  private _overlayRef: OverlayRef | undefined;
+  private _portal: TemplatePortal | undefined;
+
+  ngAfterViewInit() {
+    this._portal = new TemplatePortal(
+      this._dialogTemplate,
+      this._viewContainerRef
+    );
+    this._overlayRef = createOverlayRef(this._injector, {
+      positionStrategy: createGlobalPositionStrategy(this._injector)
+        .centerHorizontally()
+        .centerVertically(),
+      hasBackdrop: true,
+    });
+    this._overlayRef
+      .backdropClick()
+      .subscribe(() => this._overlayRef?.detach());
+  } */
+}
+
+/*   async addCity() {
     if (!this.searchCity.trim()) return;
 
     try {
@@ -161,73 +349,6 @@ export class HomeComponent implements OnInit {
       alert('Errore durante la ricerca');
     }
   } */
-
-  async searchCityName() {
-    if (!this.searchCity || this.searchCity.trim() === '') {
-      return;
-    }
-    try {
-      const result = await lastValueFrom(
-        this.weatherService.getByCity(this.searchCity)
-      );
-      this.citta = result;
-      console.log('RISULTATO:', result);
-    } catch (err) {
-      console.error('Errore durante la ricerca:', err);
-      alert('Errore durante la ricerca');
-    }
-  }
-
-  selectCity(city: any) {
-    const nuovaCitta: Coordinate = {
-      id: this.coordinate.length + 1,
-      location: city.name,
-      citta: city.name,
-      lat: city.lat,
-      lon: city.lon,
-    };
-
-    this.coordinate.push(nuovaCitta);
-    this.rightContainer.push(nuovaCitta);
-    this.searchCity = '';
-    this.citta = []; // Nasconde la lista
-    this._overlayRef?.detach(); // Chiude il dialog
-  }
-
-  /* Open Dialog */
-  private _injector = inject(Injector);
-  private _viewContainerRef = inject(ViewContainerRef);
-
-  openDialog() {
-    if (this._overlayRef && this._portal) {
-      this._overlayRef.attach(this._portal);
-    }
-  }
-
-  @ViewChild('dialogTemplate') _dialogTemplate!: TemplateRef<any>;
-  private _overlayRef: OverlayRef | undefined;
-  private _portal: TemplatePortal | undefined;
-
-  ngAfterViewInit() {
-    this._portal = new TemplatePortal(
-      this._dialogTemplate,
-      this._viewContainerRef
-    );
-    this._overlayRef = createOverlayRef(this._injector, {
-      positionStrategy: createGlobalPositionStrategy(this._injector)
-        .centerHorizontally()
-        .centerVertically(),
-      hasBackdrop: true,
-    });
-    this._overlayRef
-      .backdropClick()
-      .subscribe(() => this._overlayRef?.detach());
-  }
-
-  ngOnDestroy() {
-    this._overlayRef?.dispose();
-  }
-}
 
 // Se stai trascinando da sinistra a destra ---> non possibile sempre un elemento a sinistra!
 /*     else if (event.container.id === 'right') {

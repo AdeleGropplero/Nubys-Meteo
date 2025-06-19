@@ -1,3 +1,31 @@
+<!-- Dialog SearchBar -->
+<!-- Barra di ricerca visualizzata se `showSearch` è true e opened pure-->
+<div *ngIf="showSearch && opened" class="mb-1">
+  <div class="container-fluid">
+    <form *ngIf="showSearch" class="d-flex" role="search">
+      <input
+        autocomplete="off"
+        class="form-control me-2"
+        type="search"
+        placeholder="Cerca città"
+        aria-label="Search"
+        [(ngModel)]="searchCity"
+        (ngModelChange)="onSearchChange($event)"
+        name="search"
+      />
+    </form>
+  </div>
+  <ul *ngIf="citta.length > 0" class="result-list mt-3">
+    <li
+      *ngFor="let city of citta"
+      (click)="selectCity(city); $event.preventDefault()"
+      class="result-item"
+    >
+      {{ city.name }}, {{ city.state }} ,{{ city.country }}
+    </li>
+  </ul>
+</div>
+
 <kendo-stacklayout
   orientation="horizontal"
   [align]="{ vertical: 'top' }"
@@ -21,6 +49,8 @@
         class="lefty"
         [lat]="card.lat"
         [lon]="card.lon"
+        [id]="card.id"
+        (deleteRequest)="deleteFromLocalStorage($event)"
         [chartVisible]="true"
       ></app-today-meteo>
     </div>
@@ -38,64 +68,61 @@
       <app-today-meteo
         [lat]="card.lat"
         [lon]="card.lon"
+        [id]="card.id"
+        (deleteRequest)="deleteFromLocalStorage($event)"
         [chartVisible]="false"
       ></app-today-meteo>
     </div>
 
     <!-- Card per aggiungere nuova città -->
     <div
+      *ngIf="under6Element"
       class="add-card d-flex justify-content-center align-items-center"
-      (click)="showSearch = true; openDialog()"
+      (click)="showSearch = true; openClose(true)"
     >
-      <i class="bi bi-plus"></i>
+      <i class="bi bi-plus plus"></i>
     </div>
   </div>
-
-  <ng-template #dialogTemplate>
-    <div
-      class="example-dialog-content"
-      cdkDrag
-      cdkDragRootElement=".cdk-overlay-pane"
-    >
-      <div>
-        <!-- Barra di ricerca visualizzata se `showSearch` è true -->
-        <kendo-label [for]="citta" text="Città" class="p-3"></kendo-label>
-        <div *ngIf="showSearch" class="d-flex mb-4">
-          <div class="container-fluid">
-            <form *ngIf="showSearch" class="d-flex" role="search">
-              <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-                [(ngModel)]="searchCity"
-                name="search"
-              />
-              <button
-                class="btn btn-outline-success"
-                (click)="searchCityName()"
-                type="submit"
-              >
-                Search
-              </button>
-            </form>
-          </div>
-        </div>
-        <ul *ngIf="citta.length > 0" class="result-list mt-3">
-          <li
-            *ngFor="let city of citta"
-            (click)="selectCity(city); $event.preventDefault()"
-            class="result-item"
-          >
-            {{ city.name }}, {{ city.state }} ,{{ city.country }}
-          </li>
-        </ul>
-      </div>
-    </div>
-  </ng-template>
 </kendo-stacklayout>
 
 <!-- PROVE PRECEDENTI -->
+
+<!-- <ng-template #dialogTemplate>
+  <div
+    class="example-dialog-content"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+  >
+    <div>
+
+      <kendo-label [for]="citta" text="Città" class="p-3"></kendo-label>
+      <div *ngIf="showSearch" class="d-flex mb-1">
+        <div class="container-fluid">
+          <form *ngIf="showSearch" class="d-flex" role="search">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Cerca città"
+              aria-label="Search"
+              [(ngModel)]="searchCity"
+              (ngModelChange)="onSearchChange($event)"
+              name="search"
+            />
+          </form>
+        </div>
+      </div>
+      <ul *ngIf="citta.length > 0" class="result-list mt-3">
+        <li
+          *ngFor="let city of citta"
+          (click)="selectCity(city); $event.preventDefault()"
+          class="result-item"
+        >
+          {{ city.name }}, {{ city.state }} ,{{ city.country }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</ng-template> -->
 
 <!-- <div class="border-end border-primary pt-4 home">
   <kendo-stacklayout
