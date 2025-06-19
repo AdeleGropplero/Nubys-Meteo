@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { HomeComponent } from './Components/home/home.component';
@@ -11,4 +11,5 @@ import { HomeComponent } from './Components/home/home.component';
 })
 export class App {
   protected title = 'NubysMeteo';
+  @Input() shrink = false; // viene settato da HomeComponent
 }

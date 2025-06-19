@@ -1,6 +1,11 @@
 <!-- Dialog SearchBar -->
 <!-- Barra di ricerca visualizzata se `showSearch` è true e opened pure-->
-<div *ngIf="showSearch && opened" class="mb-1">
+<div
+  *ngIf="showSearch && opened"
+  #searchBox
+  class="mb-1 animated-search-container"
+  @slideDownSearch
+>
   <div class="container-fluid">
     <form *ngIf="showSearch" class="d-flex" role="search">
       <input
@@ -11,11 +16,11 @@
         aria-label="Search"
         [(ngModel)]="searchCity"
         (ngModelChange)="onSearchChange($event)"
-        name="search"
+        name="custom-city-search"
       />
     </form>
   </div>
-  <ul *ngIf="citta.length > 0" class="result-list mt-3">
+  <ul *ngIf="citta.length > 0" class="result-list mt-2">
     <li
       *ngFor="let city of citta"
       (click)="selectCity(city); $event.preventDefault()"
@@ -29,7 +34,7 @@
 <kendo-stacklayout
   orientation="horizontal"
   [align]="{ vertical: 'top' }"
-  class="p-5"
+  class="container-left-rigth"
   cdkDropListGroup
 >
   <!-- Contenitore SINISTRA (1 solo elemento con grafico) -->

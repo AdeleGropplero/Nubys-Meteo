@@ -1,7 +1,12 @@
 .nav-bar {
   background-color: #d0d8e000;
+
   .hero {
-    width: 16%;
+    width: 18%;
+    margin-bottom: 24px;
+    &.hero-small {
+      width: 16%;
+    }
   }
 }
 

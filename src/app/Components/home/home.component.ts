@@ -1,5 +1,7 @@
 import {
   Component,
+  ElementRef,
+  HostListener,
   inject,
   Injector,
   OnInit,
@@ -41,6 +43,8 @@ import {
   AnimationDirection,
   WindowState,
 } from '@progress/kendo-angular-dialog';
+import { trigger, transition, style, animate } from '@angular/animations';
+import { slideDownSearch } from '../../Services/cartellaFinta/animation';
 
 @Component({
   selector: 'app-home',
@@ -63,6 +67,7 @@ import {
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  animations: [slideDownSearch],
 })
 export class HomeComponent implements OnInit {
   public coordinate: Coordinate[] = [
@@ -125,19 +130,6 @@ export class HomeComponent implements OnInit {
     this.searchInputSubscription = this.searchInput$
       .pipe(debounceTime(500))
       .subscribe((value) => this.searchCityName(value));
-  }
-
-  onSearchChange(value: string) {
-    this.searchInput$.next(value);
-    /*
-     Perché usiamo Subject nella search bar?
-     - Emettere eventi manualmente ogni volta che l’utente digita (.next(val))
-     - Sottoscrivere questi eventi con un debounceTime() e fare la chiamata API
-     In pratica:
-     - Ogni ngModelChange → searchInput$.next(val)
-     - Il Subject li riceve e "trasmette" agli operatori RxJS
-     - Dopo 500ms di silenzio → esegue la chiamata
-     */
   }
 
   //#region LocalStorage
@@ -246,8 +238,34 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  onSearchChange(value: string) {
+    this.searchInput$.next(value);
+    /*
+     Perché usiamo Subject nella search bar?
+     - Emettere eventi manualmente ogni volta che l’utente digita (.next(val))
+     - Sottoscrivere questi eventi con un debounceTime() e fare la chiamata API
+     In pratica:
+     - Ogni ngModelChange → searchInput$.next(val)
+     - Il Subject li riceve e "trasmette" agli operatori RxJS
+     - Dopo 500ms di silenzio → esegue la chiamata
+     */
+  }
+
+  @ViewChild('searchBox') searchBoxRef!: ElementRef;
+  @HostListener('document:click', ['$event'])
+  onOutsideClick(event: MouseEvent): void {
+    if (!this.opened || !this.searchBoxRef) return;
+
+    if (!this.searchBoxRef.nativeElement.contains(event.target)) {
+      this.openClose(false);
+    }
+  }
+
   public openClose(isOpened: boolean): void {
     this.opened = isOpened;
+    if (!isOpened) {
+      this.showSearch = false;
+    }
   }
 
   //#region onDrop
