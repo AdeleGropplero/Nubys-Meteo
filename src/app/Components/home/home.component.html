@@ -3,7 +3,7 @@
 <div
   *ngIf="showSearch && opened"
   #searchBox
-  class="mb-1 animated-search-container"
+  class="mb-1 animated-search-container glass-card"
   @slideDownSearch
 >
   <div class="container-fluid">
@@ -31,6 +31,7 @@
   </ul>
 </div>
 
+<!-- Home -->
 <kendo-stacklayout
   orientation="horizontal"
   [align]="{ vertical: 'top' }"
@@ -43,12 +44,13 @@
     id="left"
     [cdkDropListData]="leftContainer"
     (cdkDropListDropped)="onDrop($event)"
-    class="me-4"
+    class="m-2"
   >
     <div
       *ngFor="let card of leftContainer"
       cdkDrag
       [class.fade-out]="isSwapping"
+      class="left"
     >
       <app-today-meteo
         class="lefty"
@@ -67,7 +69,7 @@
     id="right"
     [cdkDropListData]="rightContainer"
     (cdkDropListDropped)="onDrop($event)"
-    class="k-d-grid k-grid-cols-2 k-gap-4"
+    class="k-d-grid k-grid-cols-2 k-gap-4 m-2"
   >
     <div *ngFor="let card of rightContainer" cdkDrag>
       <app-today-meteo
@@ -82,7 +84,7 @@
     <!-- Card per aggiungere nuova città -->
     <div
       *ngIf="under6Element"
-      class="add-card d-flex justify-content-center align-items-center"
+      class="add-card d-flex justify-content-center align-items-center addCity"
       (click)="showSearch = true; openClose(true)"
     >
       <i class="bi bi-plus plus"></i>

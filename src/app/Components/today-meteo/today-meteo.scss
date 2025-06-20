@@ -1,6 +1,18 @@
 .today-meteo {
   width: 100% !important;
+  /* ---- */
 }
+
+:host ::ng-deep kendo-chart.grafico {
+  background-color: rgba(255, 255, 255, 0);
+  border: 1px solid rgba(255, 255, 255, 0.566);
+  border-radius: 12px;
+  backdrop-filter: blur(3px); /* sfocatura vetro */
+  box-shadow: 0 12px 30px rgba(4, 12, 123, 0.053),
+    /* ombra esterna più forte */ 0 10px 60px rgba(4, 12, 123, 0.037),
+    inset 6px 10px 11px 0px #ffffff83, inset -6px -10px 17px 0px #ffffffe0;
+}
+
 .k-hstack {
   justify-content: space-between;
 }
@@ -12,6 +24,11 @@
 
 .icona-meteo {
   font-size: 22px;
+
+  &.big {
+    color: #183966;
+    font-size: 28px;
+  }
 }
 
 .icona-meteo {
@@ -24,4 +41,17 @@
 
 .forecast-meteo {
   width: 100% !important;
+  box-shadow: none !important;
+  border: none !important;
+  background-color: transparent !important;
+  cursor: default;
+  pointer-events: none; /* disabilita interazione */
+}
+
+.temp-min {
+  color: #3b6baf;
+}
+
+.temp-max {
+  color: #400b00;
 }

@@ -108,17 +108,18 @@
 
 <ng-template #contenutoMeteo>
   <kendo-card
-    class="today-meteo"
+    class="today-meteo glass-card"
     orientation="vertical"
     *ngIf="weather && other?.daily"
   >
     <kendo-card-header class="k-hstack k-align-items-center">
-      <h4 kendoCardTitle>{{weather.name}} - {{data}}</h4>
+      <h4 kendoCardTitle>{{weather.name}}</h4>
       <div class="k-d-flex k-align-items-center">
-        <img
+        <i class="icona-meteo big me-3 bi" [ngClass]="iconaMeteo"></i>
+        <!--         <img
           [src]="'https://openweathermap.org/img/wn/' + weather.weather[0].icon + '.png'"
           alt="icona meteo"
-        />
+        /> -->
         <h5 class="m-0">
           {{(weather.main.temp).toString() | slice : 0 :4}} <span>°C</span>
         </h5>
@@ -176,7 +177,11 @@
 
       <!-- #Region Chart -->
       <!-- I VALORI DELL'ASSE Y SONO GENERATI AUTOMATICAMENTE -->
-      <kendo-chart *ngIf="chartVisible">
+      <kendo-chart
+        class="grafico mt-2"
+        [chartArea]="{ background: '#fffdfd23' } "
+        *ngIf="chartVisible"
+      >
         <kendo-chart-title text="Grafico temperature"></kendo-chart-title>
 
         <kendo-chart-category-axis>
@@ -216,109 +221,29 @@
         class="k-d-grid k-grid-rows-1 k-grid-flow-col k-gap-1 k-text-center k-w-full k-text-white pt-2"
         *ngIf="chartVisible"
       >
-        <div class="">
-          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-            ><kendo-card-header>Oggi </kendo-card-header
-            ><kendo-card-body
-              ><span class="temp-min"
-                >{{other.daily.temperature_2m_min[0] | number:'1.0-0' }}</span
-              >
-              -
-              <span class="temp-max"
-                >{{other.daily.temperature_2m_max[0] | number:'1.0-0' }}</span
-              ></kendo-card-body
-            ></kendo-card
-          >
-        </div>
-        <div class="">
-          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-            ><kendo-card-header
-              >{{other.daily.time[1] | date:'dd/MM' }}</kendo-card-header
-            ><kendo-card-body
-              ><span class="temp-min"
-                >{{other.daily.temperature_2m_min[1] | number:'1.0-0' }}</span
-              >
-              -
-              <span class="temp-max"
-                >{{other.daily.temperature_2m_max[1] | number:'1.0-0' }}</span
-              ></kendo-card-body
-            ></kendo-card
-          >
-        </div>
-        <div class="">
-          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-            ><kendo-card-header
-              >{{other.daily.time[2] | date:'dd/MM' }}</kendo-card-header
-            ><kendo-card-body
-              ><span class="temp-min"
-                >{{other.daily.temperature_2m_min[2] | number:'1.0-0' }}</span
-              >
-              -
-              <span class="temp-max"
-                >{{other.daily.temperature_2m_max[2] | number:'1.0-0' }}</span
-              ></kendo-card-body
-            ></kendo-card
-          >
-        </div>
-        <div class="">
-          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-            ><kendo-card-header
-              >{{other.daily.time[3] | date:'dd/MM' }}</kendo-card-header
-            ><kendo-card-body
-              ><span class="temp-min"
-                >{{other.daily.temperature_2m_min[3] | number:'1.0-0' }}</span
-              >
-              -
-              <span class="temp-max"
-                >{{other.daily.temperature_2m_max[3] | number:'1.0-0' }}</span
-              ></kendo-card-body
-            ></kendo-card
-          >
-        </div>
-        <div class="">
-          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-            ><kendo-card-header
-              >{{other.daily.time[4] | date:'dd/MM' }}</kendo-card-header
-            ><kendo-card-body
-              ><span class="temp-min"
-                >{{other.daily.temperature_2m_min[4] | number:'1.0-0' }}</span
-              >
-              -
-              <span class="temp-max"
-                >{{other.daily.temperature_2m_max[4] | number:'1.0-0' }}</span
-              ></kendo-card-body
-            ></kendo-card
-          >
-        </div>
-        <div class="">
-          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-            ><kendo-card-header
-              >{{other.daily.time[5] | date:'dd/MM' }}</kendo-card-header
-            ><kendo-card-body
-              ><span class="temp-min"
-                >{{other.daily.temperature_2m_min[5] | number:'1.0-0' }}</span
-              >
-              -
-              <span class="temp-max"
-                >{{other.daily.temperature_2m_max[5] | number:'1.0-0' }}</span
-              ></kendo-card-body
-            ></kendo-card
-          >
-        </div>
-        <div class="">
-          <kendo-card orientation="vertical" class="m-0 forecast-meteo"
-            ><kendo-card-header
-              >{{other.daily.time[6] | date:'dd/MM' }}</kendo-card-header
-            ><kendo-card-body
-              ><span class="temp-min"
-                >{{other.daily.temperature_2m_min[6] | number:'1.0-0' }}</span
-              >
-              -
-              <span class="temp-max"
-                >{{other.daily.temperature_2m_max[6] | number:'1.0-0' }}</span
-              ></kendo-card-body
-            ></kendo-card
-          >
+        <div *ngFor="let day of other.daily.time; let i = index">
+          <kendo-card orientation="vertical" class="m-0 forecast-meteo">
+            <kendo-card-header class="py-1">
+              {{ i === 0 ? 'Oggi:' : (day | date: 'dd/MM') }}
+            </kendo-card-header>
+            <kendo-card-body class="p-1">
+              <div class="text-center">
+                <i
+                  class="big icona-meteo bi"
+                  [ngClass]="getIconMeteo2(other.daily.weather_code[i], isDay)"
+                ></i>
+              </div>
+              <div>
+                <span class="temp-min">
+                  {{ other.daily.temperature_2m_min[i] | number: '1.0-0' }}
+                </span>
+                -
+                <span class="temp-max">
+                  {{ other.daily.temperature_2m_max[i] | number: '1.0-0' }}
+                </span>
+              </div>
+            </kendo-card-body>
+          </kendo-card>
         </div>
       </div>
     </kendo-card-body>
