@@ -9,6 +9,7 @@
   <div class="container-fluid">
     <form *ngIf="showSearch" class="d-flex" role="search">
       <input
+        #searchInput
         autocomplete="off"
         class="form-control me-2"
         type="search"
@@ -33,7 +34,7 @@
 
 <!-- Home -->
 <kendo-stacklayout
-  orientation="horizontal"
+  [orientation]="isVerticalLayout ? 'vertical' : 'horizontal'"
   [align]="{ vertical: 'top' }"
   class="container-left-rigth"
   cdkDropListGroup
@@ -69,7 +70,11 @@
     id="right"
     [cdkDropListData]="rightContainer"
     (cdkDropListDropped)="onDrop($event)"
-    class="k-d-grid k-grid-cols-2 k-gap-4 m-2"
+    [ngClass]="{
+      'k-d-grid k-gap-4 m-2': true,
+      'k-grid-cols-2': !isSmallGrid,
+      'k-grid-cols-1': isSmallGrid
+    }"
   >
     <div *ngFor="let card of rightContainer" cdkDrag>
       <app-today-meteo

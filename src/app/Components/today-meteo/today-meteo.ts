@@ -221,43 +221,4 @@ export class TodayMeteo implements OnInit {
     // Ritorna da mappa, altrimenti default
     return iconMap[cod] ?? 'bi-sun';
   }
-
-  /* API CALL (GET) forecast */
-  /*
-    public forecast: any;
-  
-  this.forecast = await lastValueFrom(
-      this.weatherService.getForecast(this.lat, this.lon)
-    );
-    console.log('🚀 ~ TodayMeteo ~ ngOnInit ~  this.forecast:', this.forecast); */
-
-  /* usiamo una pipe!! 
-  public formatDateToDayMonth(dateStr: string): string {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('it-IT', {
-      day: '2-digit',
-      month: '2-digit',
-    });
-  }
-    
-  etHourlyTemperatures(): number[] {
-  return Array.from({ length: 24 }, (_, i) => i);
 }
-  */
-}
-
-/*   public mobileQuery: MediaQueryList;
-  private _mobileQueryListener: () => void;
-
-  constructor(
-    private media: MediaMatcher,
-    private changeDetectorRef: ChangeDetectorRef
-  ) {
-    this.mobileQuery = this.media.matchMedia('(max-width: 992px)');
-    this._mobileQueryListener = () => this.changeDetectorRef.detectChanges();
-    this.mobileQuery.addEventListener('change', this._mobileQueryListener);
-  }
-
-  ngOnDestroy(): void {
-    this.mobileQuery?.removeEventListener('change', this._mobileQueryListener);
-  } */

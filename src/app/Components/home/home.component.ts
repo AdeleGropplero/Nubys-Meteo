@@ -116,7 +116,21 @@ export class HomeComponent implements OnInit {
 
   private searchInputSubscription?: Subscription;
 
+  /* responsivness */
+  public isVerticalLayout = false;
+  public isSmallGrid = false;
+
   constructor(private weatherService: WeatherApiService) {}
+
+  //#region Responsivness
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: UIEvent): void {
+    const width = (event.target as Window).innerWidth;
+
+    this.isVerticalLayout = width < 1200;
+    this.isSmallGrid = width < 709;
+  }
 
   //#region onInit
 
@@ -130,6 +144,10 @@ export class HomeComponent implements OnInit {
     this.searchInputSubscription = this.searchInput$
       .pipe(debounceTime(500))
       .subscribe((value) => this.searchCityName(value));
+
+    const width = window.innerWidth;
+    this.isVerticalLayout = width < 1200;
+    this.isSmallGrid = width < 709;
   }
 
   //#region LocalStorage
@@ -306,109 +324,4 @@ export class HomeComponent implements OnInit {
     this.searchInputSubscription?.unsubscribe();
     /*    this._overlayRef?.dispose(); */
   }
-
-  /*   //#region Dialog
-  private _injector = inject(Injector);
-  private _viewContainerRef = inject(ViewContainerRef); */
-
-  /*   openDialog() {
-    if (this._overlayRef && this._portal) {
-      this._overlayRef.attach(this._portal);
-    }
-  }
-
-  @ViewChild('dialogTemplate') _dialogTemplate!: TemplateRef<any>;
-  private _overlayRef: OverlayRef | undefined;
-  private _portal: TemplatePortal | undefined;
-
-  ngAfterViewInit() {
-    this._portal = new TemplatePortal(
-      this._dialogTemplate,
-      this._viewContainerRef
-    );
-    this._overlayRef = createOverlayRef(this._injector, {
-      positionStrategy: createGlobalPositionStrategy(this._injector)
-        .centerHorizontally()
-        .centerVertically(),
-      hasBackdrop: true,
-    });
-    this._overlayRef
-      .backdropClick()
-      .subscribe(() => this._overlayRef?.detach());
-  } */
 }
-
-/*   async addCity() {
-    if (!this.searchCity.trim()) return;
-
-    try {
-      const result = await lastValueFrom(
-        this.weatherService.getByCity(this.searchCity.trim())
-      );
-      if (result.length > 0) {
-        const found = result[0];
-        const nuovaCitta: Coordinate = {
-          id: this.coordinate.length + 1,
-          location: found.name,
-          citta: found.name,
-          lat: found.lat,
-          lon: found.lon,
-        };
-
-        // Aggiungila sia all'array principale che a rightContainer
-        this.coordinate.push(nuovaCitta);
-        this.rightContainer.push(nuovaCitta);
-        this.searchCity = ''; // reset campo input
-      } else {
-        alert('Città non trovata');
-      }
-
-      console.log('New City Added', result);
-    } catch (err) {
-      console.error('Errore durante la ricerca:', err);
-      alert('Errore durante la ricerca');
-    }
-  } */
-
-// Se stai trascinando da sinistra a destra ---> non possibile sempre un elemento a sinistra!
-/*     else if (event.container.id === 'right') {
-      const outgoing = event.previousContainer.data[0];
-      this.leftContainer = [];
-
-      // Aggiungi a destra in posizione corretta
-      this.rightContainer.splice(event.currentIndex, 0, outgoing);
-    }
- */
-/*     transferArrayItem(
-      event.previousContainer.data,
-      event.container.data,
-      event.previousIndex,
-      event.currentIndex
-    ); */
-
-/* ------------------------------------------------------------------ */
-
-/*   public drop(event: CdkDragDrop<Coordinate[]>) {
-    moveItemInArray(this.coordinate, event.previousIndex, event.currentIndex);
-    console.log(event.previousIndex, event.currentIndex);
-  }
-
-  public onClick(event: MouseEvent) {
-    console.log('Hai cliccato su:', event.target);
-  } */
-/* -------------------------------------------------------------------------------------------- */
-
-/*   public currentBox = this.coordinate[0].location;
-  public enteredBox2 = this.coordinate[0].location;
-
-  public handleDragEnter(id: string): void {
-    this.enteredBox = id;
-  }
-
-  public handleDragLeave(): void {
-    this.enteredBox = '';
-  }
-
-  public handleDrop(id: string): void {
-    this.currentBox = id;
-  }*/
