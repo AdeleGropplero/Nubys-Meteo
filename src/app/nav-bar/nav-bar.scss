@@ -1,19 +1,49 @@
-.nav-bar {
-  background-color: #d0d8e000;
+/* .nav-bar {
+  position: relative;
+  backdrop-filter: blur(3px);
+  padding-top: 24px;
+  padding-bottom: 24px;
+
+  .inside-nav {
+    background-color: rgba(255, 255, 255, 0.475);
+    padding-inline: 70px;
+  }
+
+  .hero-wrapper {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    pointer-events: none; // opzionale, per evitare click accidentali
+  }
 
   .hero {
     width: 230px;
-    margin-bottom: 24px;
-    &.hero-small {
-      width: 16%;
-    }
+    max-width: 100%;
+    height: auto;
   }
 }
 
 .dataOra {
-  padding-inline: 70px;
   font-family: "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
   font-size: 2.3rem;
   color: #1f4973;
+  font-weight: 500;
+} */
+
+.nav-bar {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.dataOra {
+  padding-inline: 32px;
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+  font-size: 2.3rem;
+  color: #ffffff;
   font-weight: 500;
 }

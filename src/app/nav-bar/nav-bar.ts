@@ -28,7 +28,7 @@ export class NavBar {
     // aggiorna ogni 60 secondi (60000 ms)
     this.oraInterval = setInterval(() => {
       this.aggiornaOra();
-    }, 60000); // oppure usa 1000 se vuoi aggiornare ogni secondo
+    }, 1000);
   }
   capitalizeFirstLetter(text: string): string {
     return text.charAt(0).toUpperCase() + text.slice(1);
@@ -39,6 +39,7 @@ export class NavBar {
     this.oraAttuale = now.toLocaleTimeString('it-IT', {
       hour: '2-digit',
       minute: '2-digit',
+      second: '2-digit',
     });
   }
   ngOnDestroy() {

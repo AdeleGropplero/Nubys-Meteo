@@ -265,6 +265,8 @@ export class HomeComponent implements OnInit {
     this.opened = isOpened;
     if (!isOpened) {
       this.showSearch = false;
+      this.searchCity = '';
+      this.citta = [];
     }
   }
 

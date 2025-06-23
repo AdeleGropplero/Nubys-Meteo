@@ -1,16 +1,20 @@
 .today-meteo {
   width: 100% !important;
+  color: whitesmoke;
+  max-height: 709px;
+  overflow: visible;
   /* ---- */
 }
 
 :host ::ng-deep kendo-chart.grafico {
-  background-color: rgba(255, 255, 255, 0);
+  max-height: 370px;
+  background-color: rgba(255, 255, 255, 0.329);
   border: 1px solid rgba(255, 255, 255, 0.566);
   border-radius: 12px;
   backdrop-filter: blur(3px); /* sfocatura vetro */
   box-shadow: 0 12px 30px rgba(4, 12, 123, 0.053),
     /* ombra esterna più forte */ 0 10px 60px rgba(4, 12, 123, 0.037),
-    inset 6px 10px 11px 0px #ffffff83, inset -6px -10px 17px 0px #ffffffe0;
+    inset 6px 10px 11px 0px #ffffff69, inset -6px -10px 17px 0px #ffffff4e;
 }
 
 .k-hstack {
@@ -26,7 +30,7 @@
   font-size: 22px;
 
   &.big {
-    color: #183966;
+    color: #f6f6f6;
     font-size: 28px;
   }
 }
@@ -49,9 +53,27 @@
 }
 
 .temp-min {
-  color: #3b6baf;
+  color: #d1d1d1d9;
 }
 
 .temp-max {
-  color: #400b00;
+  color: #ff7459;
+}
+
+kendo-card-header {
+  color: whitesmoke;
+  position: relative;
+
+  .badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid whitesmoke;
+    border-radius: 50px;
+    width: 25px;
+    height: 25px;
+    position: fixed;
+    top: -8px;
+    right: -10px;
+  }
 }

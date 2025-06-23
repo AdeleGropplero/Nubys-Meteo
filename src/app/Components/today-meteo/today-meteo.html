@@ -113,21 +113,24 @@
     *ngIf="weather && other?.daily"
   >
     <kendo-card-header class="k-hstack k-align-items-center">
-      <h4 kendoCardTitle>{{weather.name}}</h4>
+      <h4 kendoCardTitle>{{ weather.name }}</h4>
       <div class="k-d-flex k-align-items-center">
         <i class="icona-meteo big me-3 bi" [ngClass]="iconaMeteo"></i>
-        <!--         <img
-          [src]="'https://openweathermap.org/img/wn/' + weather.weather[0].icon + '.png'"
-          alt="icona meteo"
-        /> -->
         <h5 class="m-0">
-          {{(weather.main.temp).toString() | slice : 0 :4}} <span>°C</span>
+          {{ (weather.main.temp).toString() | slice:0:4 }} <span>°C</span>
         </h5>
-        <button class="m-0 p-2 ms-1 btn" (click)="onDeleteClick()">
-          <i class="bi bi-x-lg icona-meteo"></i>
-        </button>
+
+        <span
+          class="badge rounded-pill ms-2 p-0"
+          style="cursor: pointer"
+          (click)="onDeleteClick()"
+          title="Rimuovi"
+        >
+          <i class="bi bi-x-lg"></i>
+        </span>
       </div>
     </kendo-card-header>
+
     <kendo-card-body>
       <div class="k-d-flex k-align-items-center effemeridi">
         <div class="k-d-flex k-align-items-center">
@@ -237,7 +240,7 @@
                 <span class="temp-min">
                   {{ other.daily.temperature_2m_min[i] | number: '1.0-0' }}
                 </span>
-                -
+
                 <span class="temp-max">
                   {{ other.daily.temperature_2m_max[i] | number: '1.0-0' }}
                 </span>

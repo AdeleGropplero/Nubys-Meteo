@@ -57,7 +57,7 @@ export class TodayMeteo implements OnInit {
 
     console.log('🚀 ~ TodayMeteo ~ ngOnInit ~  this.weather:', this.weather);
 
-    /* API CALL (GET) pollution */
+    /* API CALL (GET) other */
     this.other = await lastValueFrom(
       this.weatherService.getOther(this.lat, this.lon)
     );

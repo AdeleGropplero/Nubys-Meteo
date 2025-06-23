@@ -1,6 +1,11 @@
 .container-left-rigth {
   padding: 25px;
   padding-top: 0px;
+  max-height: 100%;
+}
+
+#left {
+  max-height: 734px;
 }
 
 .fade-out {
@@ -36,20 +41,20 @@
   opacity: 0;
 }
 .add-card {
-  border: 3px dashed #1f4973b9;
+  border: 1px dashed #ffffffb9;
   border-radius: 12px;
   cursor: pointer;
   font-size: 7rem;
 
   & i {
-    color: #1f4973b9;
+    color: #b1b1b157;
   }
 }
 
 .add-card:hover {
-  border: 3px dashed #1f49737d;
+  border: 1px dashed #ffffff7d;
   & i {
-    color: #1f49737d;
+    color: #ffffff7d;
   }
 }
 
